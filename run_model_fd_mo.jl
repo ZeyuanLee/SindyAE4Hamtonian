@@ -1,7 +1,7 @@
 # using only forwarddiff, for multi orbit #
 
 using Pkg
-Pkg.activate(".")
+# Pkg.activate(".")
 include("model_simplechain.jl")
 
 using GeometricMachineLearning:_optimization_step!,NeuralNetworkParameters
@@ -9,7 +9,6 @@ using DelimitedFiles
 using Statistics
 using ForwardDiff
 using LinearAlgebra
-using Functors
 
 
 # setting data #
@@ -19,6 +18,8 @@ const dt = 0.01
 # inputori = collect(transpose(zori))
 files = ["orbit1.txt", "orbit2.txt", "orbit3.txt", "orbit4.txt"]
 tra_ori = [collect(transpose(readdlm(file))) for file in files]
+# TODO: try to use JLD2 or HDF5 to load data
+
 
 # all_data_combined = hcat(tra_ori)
 # input_mean = mean(all_data_combined, dims=2)
@@ -45,7 +46,14 @@ nn = NeuralNetwork(Chain(Chain(arch).layers...,)) # only sindy layer
 # これにより、モデルがより「敏感」になり、大きな勾配を生成しやすくなる
 println("L2の重みを新しい乱数で再初期化します...")
 W_shape = size(nn.params.L2.W)
-nn.params.L2.W .= randn(W_shape) # 平均0, 標準偏差1の乱数で初期化
+nn.params.L2.W .= randn(W_shape) .* 3 # 平均0, 標準偏差1の乱数で初期化
+nn.params.L2.W[3] = abs(nn.params.L2.W[3])
+nn.params.L2.W[6] = abs(nn.params.L2.W[6])
+nn.params.L2.W[8] = -abs(nn.params.L2.W[8])
+nn.params.L2.W[10] = abs(nn.params.L2.W[10])
+nn.params.L2.W[11] = -abs(nn.params.L2.W[11])
+
+
 
 
 # learning setting #
@@ -99,7 +107,7 @@ function mse_loss(p_vec, traj)
     end
 
     # though "dz_dt_pred" is dual matrix, it calculate properly "
-    return mean(abs2, dz_dt_pred - dz_dt_true)
+    return mean(abs2, dz_dt_pred - dz_dt_true) + 1e-3* norm(W_matrix)
 end
 
 
@@ -144,10 +152,13 @@ for ep in 1:n_epochs
     
     # nn.params -> vector #
     global p_vec = vec(nn.params.L2.W)
+    nn.params.L2.W .-= 1e-3 * nn.params.L2.W # update the parameters
+    nn.params.L2.W[abs.(nn.params.L2.W).< 0.1] .= 0.0
 
     loss = full_loss(p_vec, input)
     err[ep] = loss
     println("err=", err[ep])
+    println("nn.params.L2.W=", nn.params.L2.W)
 end
 
 println("p_vec=", p_vec)

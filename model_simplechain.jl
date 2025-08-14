@@ -41,7 +41,7 @@ struct PolynomialLayer{M, N} <: AbstractExplicitLayer{M, N}
 end
 
 
-function (layer::PolynomialLayer)(X_input::AbstractMatrix, ps::NamedTuple)
+function (layer::PolynomialLayer)(X_input, ps::NamedTuple)
     X = X_input
 
     # Zygoteが最も理解しやすい、ただの明示的なforループを使ったヘルパー関数

@@ -35,27 +35,31 @@ N_samples = size(input[1],2)
 N_features = size(input[1],1) # for ex 4
 output = zeros(N_features, N_samples)
 N_dim = N_features ÷ 2
-arch = PRPModel(N_features)
-# nn = NeuralNetwork(Chain(Dense(2,10,tanh),Dense(10,10,tanh),Dense(10,2,tanh),# encoder 
-#                     Chain(arch).layers..., # Nested Sindy 
-#                     Dense(1,10,tanh),Dense(10,2,identity))) # decoder
-nn = NeuralNetwork(Chain(Chain(arch).layers...,)) # only sindy layer
+sindy_arch = PRPModel(N_features)
+# nn = NeuralNetwork(Chain(Dense(2,10,tanh),Dense(10,10,tanh),Dense(10,4,tanh),# encoder  
+                    # Chain(sindy_arch).layers..., # Nested Sindy 
+                    # Dense(1,10,tanh),Dense(10,2,identity))) # decoder
+nn = NeuralNetwork(Chain(Chain(sindy_arch).layers...,)) # only sindy layer
 
+# tem_ps = (nn.params.L1,nn.params.L2,nn.params.L3,nn.params.L4,nn.params.L5,nn.params.L6)
+#AbstractNeuralNetworks.Chain(nn.model.layers[1:6]...)(rand(2),tem_ps)
 
 # ★★★ パラメータの初期化を上書き ★★★
 # これにより、モデルがより「敏感」になり、大きな勾配を生成しやすくなる
 println("L2の重みを新しい乱数で再初期化します...")
 W_shape = size(nn.params.L2.W)
-nn.params.L2.W .= randn(W_shape) .* 3 # 平均0, 標準偏差1の乱数で初期化
-nn.params.L2.W[3] = abs(nn.params.L2.W[3])
-nn.params.L2.W[6] = abs(nn.params.L2.W[6])
-nn.params.L2.W[8] = -abs(nn.params.L2.W[8])
-nn.params.L2.W[10] = abs(nn.params.L2.W[10])
-nn.params.L2.W[11] = -abs(nn.params.L2.W[11])
+nn.params.L2.W .= 0.0 # 平均0, 標準偏差1の乱数で初期化
+# nn.params.L2.W[3] = abs(nn.params.L2.W[3])
+# nn.params.L2.W[6] = abs(nn.params.L2.W[6])
+# nn.params.L2.W[8] = -abs(nn.params.L2.W[8])
+# nn.params.L2.W[10] = abs(nn.params.L2.W[10])
+# nn.params.L2.W[11] = -abs(nn.params.L2.W[11])
 
-
-
-
+nn.params.L2.W[3] = 0.5
+nn.params.L2.W[6] = 0.5
+nn.params.L2.W[8] = -2.0
+nn.params.L2.W[10] = 2.0
+nn.params.L2.W[11] = -1.0
 # learning setting #
 # const batch_size = 50
 const n_epochs = 3000
@@ -107,7 +111,7 @@ function mse_loss(p_vec, traj)
     end
 
     # though "dz_dt_pred" is dual matrix, it calculate properly "
-    return mean(abs2, dz_dt_pred - dz_dt_true) + 1e-3* norm(W_matrix)
+    return mean(abs2, dz_dt_pred - dz_dt_true) #+ 1e-3* norm(W_matrix)
 end
 
 
@@ -133,8 +137,10 @@ p_vec = initial_params_vec
 
 println("\n--- 学習開始 ---")
 
-for ep in 1:n_epochs    
+
+for ep in 1:1    
     loss_grad(p_vec) = full_loss(p_vec, input)
+    @show full_loss(p_vec, input)
     gs_vec = ForwardDiff.gradient(loss_grad, p_vec)
     
     # gs_vec -> NamedTuple #

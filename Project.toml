@@ -1,4 +1,5 @@
 [deps]
+AbstractNeuralNetworks = "60874f82-5ada-4c70-bd1c-fa6be7711c8a"
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"

@@ -4,7 +4,7 @@
 
 using Pkg
 Pkg.activate(".")
-include("model_simplechain.jl")
+# include("model_simplechain.jl")
 
 using GeometricMachineLearning:_optimization_step!,NeuralNetworkParameters
 using DelimitedFiles
@@ -15,7 +15,7 @@ using Functors
 
 # setting data #
 const dt = 0.05
-files = ["./problem/exb61.txt", "./problem/exb62.txt", "./problem/exb63.txt", "./problem/exb64.txt"]
+files = ["exb61.txt", "exb62.txt", "exb63.txt", "exb64.txt"]
 input = [collect(transpose(readdlm(file))) for file in files]
 
 # setting model #

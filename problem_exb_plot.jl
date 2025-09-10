@@ -1,5 +1,5 @@
 # using ForwardDiff
-include("exb.jl")    
+include("problem_exb.jl")    
 using GeometricIntegrators: ImplicitMidpoint, integrate
 using GeometricSolutions
 using Plots

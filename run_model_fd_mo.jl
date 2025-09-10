@@ -2,7 +2,7 @@
 
 using Pkg
 # Pkg.activate(".")
-include("model_simplechain.jl")
+# include("model_simplechain.jl")
 
 using GeometricMachineLearning:_optimization_step!,NeuralNetworkParameters
 using DelimitedFiles
@@ -138,7 +138,7 @@ p_vec = initial_params_vec
 println("\n--- 学習開始 ---")
 
 
-for ep in 1:1    
+for ep in 1:1000    
     loss_grad(p_vec) = full_loss(p_vec, input)
     @show full_loss(p_vec, input)
     gs_vec = ForwardDiff.gradient(loss_grad, p_vec)

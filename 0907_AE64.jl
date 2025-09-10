@@ -143,7 +143,8 @@ end
 
 
 
-# display the function #
+# Compose the Hamiltonian string
+# display the function 
 
 variable_names = ["q", "p"] 
 learned_weights = vec(nn.params.L2.W)

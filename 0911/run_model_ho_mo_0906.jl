@@ -14,7 +14,7 @@ using Functors
 
 # setting data #
 const dt = 0.05
-files = ["./problem/exb1.txt", "./problem/exb2.txt", "./problem/exb3.txt", "./problem/exb4.txt"]
+files = ["./exb1.txt", "./exb2.txt", "./exb3.txt", "./exb4.txt"]
 input = [collect(transpose(readdlm(file))) for file in files]
 
 # setting model #
@@ -174,3 +174,4 @@ for (i, weight) in enumerate(learned_weights)
 end
 
 println(hamiltonian_string)
+

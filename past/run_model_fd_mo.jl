@@ -1,4 +1,5 @@
 # using only forwarddiff, for multi orbit #
+# NOTE: dz_dt_true obtained by forward diffrence, the learned Hamiltonian often not converged #
 
 using Pkg
 # Pkg.activate(".")
@@ -170,3 +171,4 @@ end
 println("p_vec=", p_vec)
 println("\n--- 学習完了 ---")
 println("最終的な損失: ", err[end])
+
